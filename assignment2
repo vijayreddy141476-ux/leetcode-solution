@@ -1,0 +1,51 @@
+MOD = 1000000007
+
+n = int(input())
+
+parent = list(range(n + 1))
+size = [1] * (n + 1)
+
+def find(x):
+    if parent[x] != x:
+        parent[x] = find(parent[x])
+    return parent[x]
+
+def union(a, b):
+    a = find(a)
+    b = find(b)
+
+    if a != b:
+        if size[a] < size[b]:
+            a, b = b, a
+
+        parent[b] = a
+        size[a] += size[b]
+
+for _ in range(n - 1):
+    u, v, color = input().split()
+
+    u = int(u)
+    v = int(v)
+
+    if color == 'b':
+        union(u, v)
+
+components = []
+
+for i in range(1, n + 1):
+    if find(i) == i:
+        components.append(size[i])
+
+total = n * (n - 1) * (n - 2) // 6
+
+bad = 0
+previous = 0
+
+for s in components:
+    bad += (s * (s - 1) // 2) * previous
+    bad += s * (s - 1) * (s - 2) // 6
+    previous += s
+
+answer = total - bad
+
+print(answer % MOD)
